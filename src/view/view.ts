@@ -1,78 +1,70 @@
-import { IProduct, IProductList, PaymentMethod } from '../types';
+import { IProduct } from '../types';
+import { IProductModal, ProductModalView } from './product-modal-view';
+import { BasketModalView, IBasketModal } from './basket-modal-view';
+import { ProductCardView } from './product-card-view';
+import { BasketButtonView, IBasketButton } from './basket-button-view';
+import { BasketCardView } from './basket-card-view';
+import { DeliveryModalView, IDeliveryModal } from './delivery-modal-view';
+import { ContactsModalView, IContactsModal } from './contacts-modal-view';
+import { ISuccessModal, SuccessModalView } from './success-modal-view';
 
-interface IModal {
-	open(): void;
-	close(): void;
-	setIsButtonActive(value: boolean): void;
-}
-
-type ModalListeners = {
-	onClose(): void;
-	onSubmit(): void;
-}
-
-interface IModalConstructor {
-	new (container: HTMLElement, listeners: ModalListeners): IModal;
-}
-
-export interface IProductModal extends IModal {
-	renderProduct(product: IProduct): void;
-}
-
-export interface IProductModalConstructor {
-	new (container: HTMLElement, listeners: ModalListeners & {
-		onProductRemove(id: string): void;
-	}): IProductModal;
-}
-
-export interface IBusketModal extends IModal {
-	renderProducts(products: IProductList): void;
-}
-
-export interface IBusketModalConstructor {
-	new (container: HTMLElement, listeners: ModalListeners & {
-		onProductRemove(id: string): void;
-	}): IBusketModal;
-}
-
-export interface IDeliveryModalConstructor {
-	new (container: HTMLElement, listeners: ModalListeners & {
-		onChangePaymentMethod(value: PaymentMethod): void;
-		onChangeAddress(value: string): void;
-	}): IModal;
-}
-
-export interface IContactsModalConstructor {
-	new (container: HTMLElement, listeners: ModalListeners & {
-		onChangeEmail(value: string): void;
-		onChangePhone(value: string): void;
-	}): IModal;
-}
-
-export interface ISuccessOrderConstructor {
-	new (container: HTMLElement): IModal;
-}
-
-export interface IProductCard {
-	unmount(): void;
-}
-
-export interface IProductCardConstructor {
-	new (product: IProduct, container: HTMLElement, options: {
-		onClick(productId: string): void
-	}): IProductCard;
-}
 
 export interface IView {
-	init(): void;
-	createProductModal: IProductModalConstructor;
-	createBusketModal: IBusketModalConstructor;
-	createDeliveryModal: IDeliveryModalConstructor;
-	createContactsModal: IContactsModalConstructor;
-	createSuccessOrderModal: ISuccessOrderConstructor;
-	createProductCard: IProductCardConstructor;
+	addProductCard(product: IProduct, onClick?: VoidFunction): ProductCardView;
+	fillBasketCards(
+		products: IProduct[],
+		onClick?: (id: IProduct['id']) => void
+	): void;
+	basketButton: IBasketButton;
+	productModal: IProductModal;
+	basketModal: IBasketModal;
+	deliveryModal: IDeliveryModal;
+	contactsModal: IContactsModal;
+	successModal: ISuccessModal;
 }
 
-export interface IViewConstructor {
-	new (root: HTMLElement): IView;
+export class View implements IView {
+	private mainContainer: HTMLElement;
+	basketButton: IBasketButton;
+	productModal: IProductModal;
+	basketModal: IBasketModal;
+	deliveryModal: IDeliveryModal;
+	contactsModal: IContactsModal;
+	successModal: ISuccessModal;
+
+	constructor(mainContainer: HTMLElement, headerContainer: HTMLElement) {
+		this.mainContainer = mainContainer;
+		this.basketButton = new BasketButtonView(headerContainer);
+		this.productModal = new ProductModalView();
+		this.basketModal = new BasketModalView();
+		this.deliveryModal = new DeliveryModalView();
+		this.contactsModal = new ContactsModalView();
+		this.successModal = new SuccessModalView();
+	}
+
+	addProductCard(product: IProduct, onClick?: VoidFunction) {
+		const card = new ProductCardView();
+		card.onClick = onClick;
+		this.mainContainer.appendChild(card.render(product));
+		return card;
+	}
+
+	fillBasketCards(
+		products: IProduct[],
+		onDelete: (id: IProduct['id']) => void
+	) {
+		const cards = products.map(
+			(p, index) => {
+				const card = new BasketCardView();
+				card.onDelete = () => onDelete(p.id)
+
+				return card.render({
+					index: index + 1,
+					title: p.title,
+					price: p.price,
+				});
+			}
+		);
+		this.basketModal.setValue(...cards);
+	}
 }

@@ -94,7 +94,7 @@ yarn build
 
 ### Models
 
-- [BusketModel](src/models/busket-model.ts)
+- [BasketModel](src/models/basket-model.ts)
   - `getItemsCount` - получение количества товаров в корзине
   - `getItems` - получение товаров
   - `addItem` - добавление товара

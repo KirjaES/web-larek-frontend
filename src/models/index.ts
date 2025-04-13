@@ -1,13 +1,22 @@
-import { IBusketModel } from './busket-model';
-import { IOrderModel } from './order-model';
-import { IProductModel } from './product-model';
+import { BasketModel, IBasketModel } from './basket-model';
+import { IOrderModel, OrderModel } from './order-model';
+import { IProductModel, ProductModel } from './product-model';
+import { IApiWebLarek } from '../api/api';
 
 export interface IModel {
-	busketModel: IBusketModel
-	orderModel: IOrderModel
-	productModel: IProductModel
+	basket: IBasketModel
+	order: IOrderModel
+	product: IProductModel
 }
 
-export interface IModelConstructor {
-	new(): IModel;
+export class Model implements IModel {
+	basket: IBasketModel;
+	order: IOrderModel;
+	product: IProductModel;
+
+	constructor(apiClient: IApiWebLarek) {
+		this.basket = new BasketModel();
+		this.order = new OrderModel(apiClient);
+		this.product = new ProductModel(apiClient);
+	}
 }
