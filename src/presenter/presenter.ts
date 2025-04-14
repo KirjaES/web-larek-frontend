@@ -21,35 +21,40 @@ export class Presenter implements IPresenter {
 	private mountProductCard(product: IProduct) {
 		const productCard = this.view.addProductCard(product);
 
-		productCard.onClick = this.emitter.trigger<Events['cardClick']>('cardClick', product);
+		productCard.onClick = this.emitter.trigger<Events['cardClick']>(
+			'cardClick',
+			product
+		);
 	}
 
 	private mountProductModal() {
 		const productModal = this.view.productModal;
 
 		this.emitter.on<Events['cardClick']>('cardClick', (product) => {
-
-			productModal.render(product)
-			productModal.disabled = this.model.basket.has(product.id) || product.price === null
+			productModal.disabled =
+				this.model.basket.has(product.id) || product.price === null;
 			productModal.onSubmit = () => {
 				this.model.basket.addItem(product);
 				this.view.productModal.disabled = true;
-				this.emitter.emit<Events['basketUpdated']>('basketUpdated')
-			}
-			productModal.open()
-		})
+				this.emitter.emit<Events['basketUpdated']>('basketUpdated');
+			};
+			productModal.render(product);
+			productModal.open();
+		});
 	}
 
 	private mountBasketButton() {
 		this.emitter.on<Events['basketUpdated']>('basketUpdated', () => {
-			this.view.basketButton.setCounter(this.model.basket.getItemsCount())
-		})
-		this.view.basketButton.onClick = this.emitter.trigger<Events['basketOpen']>('basketOpen');
+			this.view.basketButton.setCounter(this.model.basket.getItemsCount());
+		});
+		this.view.basketButton.onClick =
+			this.emitter.trigger<Events['basketOpen']>('basketOpen');
 	}
 
 	private mountBasketModal() {
 		const basketModal = this.view.basketModal;
-		basketModal.onSubmit = this.emitter.trigger<Events['deliveryOpen']>('deliveryOpen');
+		basketModal.onSubmit =
+			this.emitter.trigger<Events['deliveryOpen']>('deliveryOpen');
 
 		this.emitter.on<Events['basketOpen']>('basketOpen', () => {
 			basketModal.disabled = this.model.basket.getPrice() === 0;
@@ -72,19 +77,19 @@ export class Presenter implements IPresenter {
 			const deliveryDataErrors = this.model.order.validateDeliveryData();
 			deliveryModal.disabled = !deliveryDataErrors.isValid;
 			deliveryModal.error = deliveryDataErrors.message;
-		}
-
+		};
 
 		deliveryModal.onChangePaymentMethod = (val) => {
 			this.model.order.paymentMethod = val;
 			deliveryModal.paymentMethod = val;
 			setModalErrors();
-		}
+		};
 		deliveryModal.onChangeAddress = (val) => {
 			this.model.order.address = val;
 			setModalErrors();
-		}
-		deliveryModal.onSubmit = this.emitter.trigger<Events['contactsOpen']>('contactsOpen');
+		};
+		deliveryModal.onSubmit =
+			this.emitter.trigger<Events['contactsOpen']>('contactsOpen');
 
 		this.emitter.on<Events['deliveryOpen']>('deliveryOpen', () => {
 			deliveryModal.addressText = this.model.order.address;
@@ -103,29 +108,32 @@ export class Presenter implements IPresenter {
 			const contactsDataErrors = this.model.order.validateContacts();
 			contactsModal.disabled = !contactsDataErrors.isValid;
 			contactsModal.error = contactsDataErrors.message;
-		}
+		};
 
 		contactsModal.onChangeEmail = (val) => {
 			this.model.order.email = val;
 			setModalErrors();
-		}
+		};
 		contactsModal.onChangePhone = (val) => {
 			this.model.order.phone = val;
 			setModalErrors();
-		}
+		};
 		contactsModal.onSubmit = () => {
 			contactsModal.disabled = true;
-			this.model.order.makeOrder(this.model.basket.getItems(), this.model.basket.getPrice())
+			this.model.order
+				.makeOrder(this.model.basket.getItems(), this.model.basket.getPrice())
 				.then((data) => {
 					this.model.basket.clearAll();
 					this.model.order.clearAll();
 					this.emitter.emit<Events['basketUpdated']>('basketUpdated');
-					this.emitter.emit<Events['successOpen']>('successOpen', {total: data.total});
+					this.emitter.emit<Events['successOpen']>('successOpen', {
+						total: data.total,
+					});
 				})
-				.catch((err) => contactsModal.error = err)
+				.catch((err) => (contactsModal.error = err))
 				.finally(() => {
 					contactsModal.disabled = false;
-				})
+				});
 		};
 
 		this.emitter.on<Events['contactsOpen']>('contactsOpen', () => {
@@ -145,7 +153,7 @@ export class Presenter implements IPresenter {
 			successModal.close();
 		};
 
-		this.emitter.on<Events['successOpen']>('successOpen', ({total}) => {
+		this.emitter.on<Events['successOpen']>('successOpen', ({ total }) => {
 			successModal.priceText = total;
 			successModal.render();
 			successModal.open();
@@ -164,4 +172,3 @@ export class Presenter implements IPresenter {
 		this.mountSuccessModal();
 	}
 }
-

@@ -1,25 +1,24 @@
 import { IModal, Modal } from './modal-view';
-import { cloneTemplate } from '../utils/utils';
+import { cloneTemplate, ensureElement } from '../utils/utils';
 
-export interface ISuccessModal extends IModal{
+export interface ISuccessModal extends IModal {
 	set onSubmit(fn: VoidFunction);
 	set priceText(val: number);
 	render(): void;
 }
 
 export class SuccessModalView extends Modal implements ISuccessModal {
-	private successContent: HTMLElement;
+	private element: HTMLElement;
 	private totalPrice: HTMLParagraphElement;
 	private newOrderButton: HTMLButtonElement;
 
-
 	constructor() {
-		super()
+		super();
 
 		const element = cloneTemplate<HTMLButtonElement>('#success');
-		this.successContent = element;
-		this.totalPrice = element.querySelector('.order-success__description');
-		this.newOrderButton = element.querySelector('.order-success__close');
+		this.totalPrice = ensureElement<HTMLParagraphElement>('.order-success__description', element);
+		this.newOrderButton = ensureElement<HTMLButtonElement>('.order-success__close', element);
+		this.element = element;
 	}
 
 	set onSubmit(handler: VoidFunction) {
@@ -34,6 +33,6 @@ export class SuccessModalView extends Modal implements ISuccessModal {
 	}
 
 	render() {
-		this.setContent(this.successContent);
+		super.setValue(this.element);
 	}
 }

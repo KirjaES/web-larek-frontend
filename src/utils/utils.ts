@@ -133,3 +133,15 @@ export function createElement<
     }
     return element;
 }
+
+/** Вспомогательная функция, которая меняет children на html element или массив */
+export function setChildren(root: HTMLElement, childs: HTMLElement | HTMLElement[]) {
+    root.replaceChildren(...Array.isArray(childs) ? childs : [childs]);
+}
+
+/** Вспомогательная функция, которая устанавливает класс элементу, если ранее он не был добавлен */
+export function addClass(element: HTMLElement, className?: string) {
+    if(className && !element.classList.contains(className)) {
+        element.classList.add(className);
+    }
+}

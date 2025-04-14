@@ -1,4 +1,4 @@
-import { cloneTemplate } from '../utils/utils';
+import { cloneTemplate, ensureElement } from '../utils/utils';
 
 export interface IBasketCard {
 	set onDelete(handler: VoidFunction | undefined);
@@ -8,11 +8,20 @@ export interface IBasketCard {
 export class BasketCardView implements IBasketCard {
 	private element: HTMLElement;
 	private deleteButton: HTMLButtonElement;
+	private index: HTMLElement;
+	private title: HTMLElement;
+	private price: HTMLElement;
 
 	constructor() {
 		const element = cloneTemplate('#card-basket');
 
-		this.deleteButton = element.querySelector('.basket__item-delete');
+		this.deleteButton = ensureElement<HTMLButtonElement>(
+			'.basket__item-delete',
+			element
+		);
+		this.index = ensureElement('.basket__item-index', element);
+		this.title = ensureElement('.card__title', element);
+		this.price = ensureElement('.card__price', element);
 		this.element = element;
 	}
 
@@ -21,10 +30,9 @@ export class BasketCardView implements IBasketCard {
 	}
 
 	render(props: { index: number; title: string; price: number }) {
-		this.element.querySelector('.basket__item-index').textContent =
-			props.index.toString();
-		this.element.querySelector('.card__title').textContent = props.title;
-		this.element.querySelector('.card__price').textContent = props.price.toString();
+		this.index.textContent = props.index.toString();
+		this.title.textContent = props.title;
+		this.price.textContent = props.price.toString();
 
 		return this.element;
 	}

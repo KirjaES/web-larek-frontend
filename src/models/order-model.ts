@@ -5,7 +5,7 @@ import { IApiWebLarek } from '../api/api';
 type ValidateStatus = {
 	isValid: boolean;
 	message?: string;
-}
+};
 
 export interface IOrderModel {
 	address: string;
@@ -32,34 +32,37 @@ export class OrderModel implements IOrderModel {
 	validateDeliveryData() {
 		let message: string | undefined;
 		let isValid = true;
-		if(!(this.address.length > 0)) {
+		if (!(this.address.length > 0)) {
 			message = 'Заполните адрес';
 			isValid = false;
 		}
-		if(!(this.paymentMethod.length > 0) || !['cash', 'online'].includes(this.paymentMethod)) {
+		if (
+			!(this.paymentMethod.length > 0) ||
+			!['cash', 'online'].includes(this.paymentMethod)
+		) {
 			message = 'Выберите способ оплаты';
 			isValid = false;
 		}
 		return {
 			isValid,
-			message
-		}
+			message,
+		};
 	}
 	validateContacts() {
 		let message: string | undefined;
 		let isValid = true;
-		if(!(this.phone.length > 0)) {
+		if (!(this.phone.length > 0)) {
 			message = 'Заполните номер телефона';
 			isValid = false;
 		}
-		if(!(this.email.length > 0)) {
+		if (!(this.email.length > 0)) {
 			message = 'Заполните почту';
 			isValid = false;
 		}
 		return {
 			isValid,
-			message
-		}
+			message,
+		};
 	}
 	makeOrder(products: IProduct[], total: number): Promise<IOrder> {
 		return this.apiClient.postOrder({

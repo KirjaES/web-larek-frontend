@@ -19,7 +19,7 @@ export class ProductModel implements IProductModel {
 	}
 
 	async fetchProducts() {
-		const products = await this.apiClient.getProductList()
+		const products = await this.apiClient.getProductList();
 		this.products = products;
 
 		return products;
@@ -30,6 +30,6 @@ export class ProductModel implements IProductModel {
 	}
 
 	getProductById(productId: IProduct['id']) {
-		return this.products.items.find(p => p.id === productId);
+		return this.products.items.find((p) => p.id === productId);
 	}
 }

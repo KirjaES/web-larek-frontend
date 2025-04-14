@@ -1,8 +1,8 @@
 import { IModal, Modal } from './modal-view';
 import { PaymentMethod } from '../types';
-import { cloneTemplate } from '../utils/utils';
+import { cloneTemplate, ensureElement } from '../utils/utils';
 
-export interface IDeliveryModal extends IModal{
+export interface IDeliveryModal extends IModal {
 	set disabled(val: boolean);
 	set paymentMethod(val: PaymentMethod | '');
 	set addressText(val: string);
@@ -14,24 +14,32 @@ export interface IDeliveryModal extends IModal{
 }
 
 export class DeliveryModalView extends Modal implements IDeliveryModal {
-	private deliveryContent: HTMLElement;
+	private element: HTMLElement;
 	private address: HTMLInputElement;
 	private orderButton: HTMLButtonElement;
 	private onlineButton: HTMLButtonElement;
 	private cashButton: HTMLButtonElement;
 	private errorSpan: HTMLSpanElement;
 
-
 	constructor() {
-		super()
+		super();
 
 		const element = cloneTemplate<HTMLButtonElement>('#order');
-		this.deliveryContent = element;
-		this.address = element.querySelector('.form__input');
-		this.orderButton = element.querySelector('.order__button');
-		this.onlineButton = element.querySelector('[name="card"]');
-		this.cashButton = element.querySelector('[name="cash"]');
-		this.errorSpan = element.querySelector('.form__errors');
+		this.address = ensureElement<HTMLInputElement>('.form__input', element);
+		this.orderButton = ensureElement<HTMLButtonElement>(
+			'.order__button',
+			element
+		);
+		this.onlineButton = ensureElement<HTMLButtonElement>(
+			'[name="card"]',
+			element
+		);
+		this.cashButton = ensureElement<HTMLButtonElement>(
+			'[name="cash"]',
+			element
+		);
+		this.errorSpan = ensureElement('.form__errors', element);
+		this.element = element;
 	}
 
 	set onChangePaymentMethod(fn: (val: PaymentMethod) => void) {
@@ -54,10 +62,10 @@ export class DeliveryModalView extends Modal implements IDeliveryModal {
 		this.onlineButton.classList.remove('button_alt-active');
 		this.cashButton.classList.remove('button_alt-active');
 
-		if(val === 'online') {
+		if (val === 'online') {
 			this.onlineButton.classList.add('button_alt-active');
 		}
-		if(val === 'cash') {
+		if (val === 'cash') {
 			this.cashButton.classList.add('button_alt-active');
 		}
 	}
@@ -67,10 +75,8 @@ export class DeliveryModalView extends Modal implements IDeliveryModal {
 	}
 
 	set disabled(disabled: boolean) {
-		if(disabled)
-			this.orderButton.disabled = disabled;
-		else
-			this.orderButton.removeAttribute('disabled')
+		if (disabled) this.orderButton.disabled = disabled;
+		else this.orderButton.removeAttribute('disabled');
 	}
 
 	set error(val: string | undefined) {
@@ -78,6 +84,6 @@ export class DeliveryModalView extends Modal implements IDeliveryModal {
 	}
 
 	render() {
-		this.setContent(this.deliveryContent);
+		super.setValue(this.element);
 	}
 }

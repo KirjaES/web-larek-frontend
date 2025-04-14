@@ -1,5 +1,5 @@
 import { IModal, Modal } from './modal-view';
-import { cloneTemplate } from '../utils/utils';
+import { cloneTemplate, setChildren } from '../utils/utils';
 
 export interface IBasketModal extends IModal {
 	setValue(...content: HTMLElement[]): void;
@@ -10,23 +10,23 @@ export interface IBasketModal extends IModal {
 }
 
 export class BasketModalView extends Modal implements IBasketModal {
-	private basketContent: HTMLElement;
+	private element: HTMLElement;
 	private children: HTMLElement;
 	private button: HTMLButtonElement;
 	private summary: HTMLElement;
 
 	constructor() {
-		super()
+		super();
 
 		const element = cloneTemplate<HTMLButtonElement>('#basket');
-		this.basketContent = element;
+		this.element = element;
 		this.button = element.querySelector('button');
 		this.summary = element.querySelector('.basket__price');
-		this.children = element.querySelector('.basket__list')
+		this.children = element.querySelector('.basket__list');
 	}
 
 	setValue(...args: HTMLElement[]) {
-		this.children.replaceChildren(...args);
+		setChildren(this.children, args);
 	}
 
 	set counter(value: number) {
@@ -38,14 +38,11 @@ export class BasketModalView extends Modal implements IBasketModal {
 	}
 
 	set disabled(disabled: boolean) {
-		if(disabled)
-			this.button.disabled = disabled;
-		else
-			this.button.removeAttribute('disabled')
+		if (disabled) this.button.disabled = disabled;
+		else this.button.removeAttribute('disabled');
 	}
 
 	render() {
-		this.setContent(this.basketContent);
+		super.setValue(this.element);
 	}
 }
-

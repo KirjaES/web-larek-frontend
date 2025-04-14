@@ -84,8 +84,9 @@ yarn build
 
 ### Основные компоненты [view](src/view/view.ts)
 
-- Список товаров
-  - Карточка товара
+- Карточка товара
+- Карточка товара внутри корзины
+- Кнопка корзины
 - Модальное окно товара
 - Модальное окно корзины
 - Модальное окно выбора способа оплаты
@@ -96,17 +97,20 @@ yarn build
 
 - [BasketModel](src/models/basket-model.ts)
   - `getItemsCount` - получение количества товаров в корзине
+  - `getPrice` - получение общей стоимости товаров в корзине
   - `getItems` - получение товаров
   - `addItem` - добавление товара
   - `removeItem` - удаление товара
   - `clearAll` - очистка корзины
 - [OrderModel](src/models/order-model.ts)
-  - `setProducts` - добавление товаров в заказ
-  - `isCorrectDeliveryData` - проверка корректности данных доставки
-  - `setDeliveryData` - установка данных доставки
-  - `isCorrectContacts` - проверка корректности контактнных данных
-  - `setContacts` - установка контактнных данных
+  - `address` - адрес доставки
+  - `paymentMethod` - способ оплаты (или пустая строка, если не выбран)
+  - `email` - электронная почта покупателя
+  - `phone` - телефон покупателя
+  - `validateDeliveryData` - проверка корректности данных доставки
+  - `validateContacts` - проверка корректности контактных данных
   - `makeOrder` - оформление заказа
+  - `clearAll` - очистка всех данных заказа
 - [ProductModel](src/models/product-model.ts)
   - `fetchProducts` - запрос товаров
   - `getProducts` - получение товаров

@@ -1,66 +1,50 @@
-export type ModalListeners = {
-	onClose?(): void;
-	onSubmit?(): void;
-};
+import { addClass, ensureElement } from '../utils/utils';
 
 export interface IModal {
 	open(): void;
 	close(): void;
-	setContent(content: HTMLElement): void;
-	setListeners(listeners: ModalListeners): void;
+	setValue(content: HTMLElement): void;
 }
 
 export class Modal implements IModal {
-	private element: HTMLElement;
+	private static element: HTMLElement;
+	private static modalContent: HTMLElement;
+	private static closeButton: HTMLButtonElement;
 
 	constructor() {
+		if(Modal.element) return;
 		const element = document.getElementById('modal-container');
+		element.classList.remove('modal_active');
+		Modal.closeButton = ensureElement<HTMLButtonElement>('button.modal__close', element);
+		Modal.modalContent = ensureElement('div.modal__content', element);
 
-		if (element.classList.contains('modal_active')) {
-			element.classList.remove('modal_active');
-		}
+		Modal.element = element;
+		this.setBaseListeners();
+	}
 
-		(
-			element.querySelector('button.modal__close') as HTMLButtonElement
-		).onclick = this.close.bind(this);
-		element.onclick = (e) => {
-			if(e.target === element) {
+	private setBaseListeners() {
+		Modal.closeButton.onclick = this.close.bind(this);
+		Modal.element.onclick = (e) => {
+			if (e.target === Modal.element) {
 				this.close();
 			}
 		};
 		document.addEventListener('keyup', (e) => {
-			if(e.key === 'Escape') {
+			if (e.key === 'Escape') {
 				this.close();
 			}
-		})
-
-		this.element = element;
+		});
 	}
 
 	open() {
-		if (!this.element.classList.contains('modal_active')) {
-			this.element.classList.add('modal_active');
-		}
+		addClass(Modal.element, 'modal_active');
 	}
 
 	close() {
-		if (this.element.classList.contains('modal_active')) {
-			this.element.classList.remove('modal_active');
-		}
+		Modal.element.classList.remove('modal_active');
 	}
 
-	setListeners(listeners: ModalListeners) {
-		(
-			this.element.querySelector('button.modal__close') as HTMLButtonElement
-		).onclick = listeners.onClose;
-		this.element.onclick = (e) => {
-			if(e.target === this.element) {
-				listeners.onClose()
-			}
-		};
-	}
-
-	setContent(content: HTMLElement) {
-		this.element.querySelector('div.modal__content').replaceChildren(content);
+	setValue(content: HTMLElement) {
+		Modal.modalContent.replaceChildren(content);
 	}
 }

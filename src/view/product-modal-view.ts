@@ -1,50 +1,56 @@
 import { IProduct } from '../types';
 import { IModal, Modal } from './modal-view';
-import { bem, cloneTemplate } from '../utils/utils';
+import { addClass, bem, cloneTemplate, ensureElement } from '../utils/utils';
 import { cardCategoryMap, CDN_URL } from '../utils/constants';
 
-export interface IProductModal extends IModal {
+export interface IProductModal extends IModal{
 	render(product: IProduct): void;
 	set onSubmit(onSubmit: VoidFunction | undefined);
 	set disabled(disabled: boolean);
 }
 
 export class ProductModalView extends Modal implements IProductModal {
-	private productContent: HTMLElement;
+	private element: HTMLElement;
+	private category: HTMLElement;
+	private title: HTMLElement;
+	private cardText: HTMLElement;
+	private image: HTMLImageElement;
+	private price: HTMLElement;
+	private button: HTMLButtonElement;
 
 	constructor() {
-		super()
-	}
+		super();
 
-	render(product: IProduct) {
 		const element = cloneTemplate<HTMLButtonElement>('#card-preview');
-
-		const categoryElement = element.querySelector('.card__category');
-		const categoryModify = cardCategoryMap[product.category] || 'soft';
-		categoryElement.classList.add(bem('card', 'category', categoryModify).name);
-		categoryElement.textContent = product.category;
-
-		element.querySelector('.card__title').textContent = product.title;
-		element.querySelector('.card__text').textContent = product.description;
-		(
-			element.querySelector('.card__image') as HTMLImageElement
-		).src = `${CDN_URL}${product.image}`;
-		element.querySelector('.card__price').textContent =
-			product.price !== null ? `${product.price} синапсов` : 'Бесценно';
-
-		this.productContent = element;
-		this.setContent(element);
+		this.category = ensureElement('.card__category', element);
+		this.title = ensureElement('.card__title', element);
+		this.cardText = ensureElement('.card__text', element);
+		this.image = ensureElement<HTMLImageElement>('.card__image', element);
+		this.price = ensureElement('.card__price', element);
+		this.button = ensureElement<HTMLButtonElement>('.card__button', element);
+		this.element = element;
 	}
 
 	set onSubmit(handler: VoidFunction) {
-		(this.productContent.querySelector('.card__button') as HTMLButtonElement).onclick = handler;
+		this.button.onclick = handler;
 	}
 
 	set disabled(disabled: boolean) {
-		const button = (this.productContent.querySelector('.card__button') as HTMLButtonElement);
-		if(disabled)
-			button.disabled = disabled;
-		else
-			button.removeAttribute('disabled')
+		if (disabled) this.button.disabled = disabled;
+		else this.button.removeAttribute('disabled');
+	}
+
+	render(product: IProduct) {
+		const categoryModify = cardCategoryMap[product.category] || 'soft';
+		addClass(this.category, bem('card', 'category', categoryModify).name);
+		this.category.textContent = product.category;
+
+		this.title.textContent = product.title;
+		this.cardText.textContent = product.description;
+		this.image.src = `${CDN_URL}${product.image}`;
+		this.price.textContent =
+			product.price !== null ? `${product.price} синапсов` : 'Бесценно';
+
+		super.setValue(this.element);
 	}
 }

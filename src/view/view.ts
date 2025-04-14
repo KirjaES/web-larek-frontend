@@ -8,7 +8,6 @@ import { DeliveryModalView, IDeliveryModal } from './delivery-modal-view';
 import { ContactsModalView, IContactsModal } from './contacts-modal-view';
 import { ISuccessModal, SuccessModalView } from './success-modal-view';
 
-
 export interface IView {
 	addProductCard(product: IProduct, onClick?: VoidFunction): ProductCardView;
 	fillBasketCards(
@@ -53,18 +52,16 @@ export class View implements IView {
 		products: IProduct[],
 		onDelete: (id: IProduct['id']) => void
 	) {
-		const cards = products.map(
-			(p, index) => {
-				const card = new BasketCardView();
-				card.onDelete = () => onDelete(p.id)
+		const cards = products.map((p, index) => {
+			const card = new BasketCardView();
+			card.onDelete = () => onDelete(p.id);
 
-				return card.render({
-					index: index + 1,
-					title: p.title,
-					price: p.price,
-				});
-			}
-		);
+			return card.render({
+				index: index + 1,
+				title: p.title,
+				price: p.price,
+			});
+		});
 		this.basketModal.setValue(...cards);
 	}
 }

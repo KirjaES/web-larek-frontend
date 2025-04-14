@@ -1,5 +1,5 @@
 import { IProduct } from '../types';
-import { bem, cloneTemplate } from '../utils/utils';
+import { addClass, bem, cloneTemplate, ensureElement } from '../utils/utils';
 import { cardCategoryMap, CDN_URL } from '../utils/constants';
 
 export interface IProductCardView {
@@ -15,11 +15,12 @@ export class ProductCardView implements IProductCardView {
 	private price: HTMLElement;
 
 	constructor() {
-		this.element = cloneTemplate<HTMLButtonElement>('#card-catalog');
-		this.category = this.element.querySelector('.card__category');
-		this.title = this.element.querySelector('.card__title')
-		this.image = this.element.querySelector('.card__image')
-		this.price = this.element.querySelector('.card__price')
+		const element = cloneTemplate<HTMLButtonElement>('#card-catalog');
+		this.category = ensureElement('.card__category', element);
+		this.title = ensureElement('.card__title', element);
+		this.image = ensureElement<HTMLImageElement>('.card__image', element);
+		this.price = ensureElement('.card__price', element);
+		this.element = element;
 	}
 
 	set onClick(onClick: VoidFunction | undefined) {
@@ -28,7 +29,7 @@ export class ProductCardView implements IProductCardView {
 
 	render(product: IProduct) {
 		const categoryModify = cardCategoryMap[product.category] || 'soft';
-		this.category.classList.add(bem('card', 'category', categoryModify).name);
+		addClass(this.category, bem('card', 'category', categoryModify).name);
 		this.category.textContent = product.category;
 		this.title.textContent = product.title;
 

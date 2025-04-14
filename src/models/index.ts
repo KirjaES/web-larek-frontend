@@ -4,9 +4,9 @@ import { IProductModel, ProductModel } from './product-model';
 import { IApiWebLarek } from '../api/api';
 
 export interface IModel {
-	basket: IBasketModel
-	order: IOrderModel
-	product: IProductModel
+	basket: IBasketModel;
+	order: IOrderModel;
+	product: IProductModel;
 }
 
 export class Model implements IModel {

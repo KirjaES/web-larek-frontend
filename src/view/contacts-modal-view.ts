@@ -1,7 +1,7 @@
 import { IModal, Modal } from './modal-view';
-import { cloneTemplate } from '../utils/utils';
+import { cloneTemplate, ensureElement } from '../utils/utils';
 
-export interface IContactsModal extends IModal{
+export interface IContactsModal extends IModal {
 	set disabled(val: boolean);
 	set onSubmit(fn: VoidFunction);
 	set onChangeEmail(fn: (val: string) => void);
@@ -13,22 +13,21 @@ export interface IContactsModal extends IModal{
 }
 
 export class ContactsModalView extends Modal implements IContactsModal {
-	private contactsContent: HTMLElement;
+	private element: HTMLElement;
 	private email: HTMLInputElement;
 	private phone: HTMLInputElement;
 	private orderButton: HTMLButtonElement;
 	private errorSpan: HTMLSpanElement;
 
-
 	constructor() {
-		super()
+		super();
 
 		const element = cloneTemplate<HTMLButtonElement>('#contacts');
-		this.contactsContent = element;
-		this.email = element.querySelector('[name="email"]');
-		this.phone = element.querySelector('[name="phone"]');
-		this.orderButton = element.querySelector('button');
-		this.errorSpan = element.querySelector('.form__errors');
+		this.email = ensureElement<HTMLInputElement>('[name="email"]', element);
+		this.phone = ensureElement<HTMLInputElement>('[name="phone"]', element);
+		this.orderButton = ensureElement<HTMLButtonElement>('button', element);
+		this.errorSpan = ensureElement('.form__errors', element);
+		this.element = element;
 	}
 
 	set onChangeEmail(fn: (val: string) => void) {
@@ -47,10 +46,8 @@ export class ContactsModalView extends Modal implements IContactsModal {
 	}
 
 	set disabled(disabled: boolean) {
-		if(disabled)
-			this.orderButton.disabled = disabled;
-		else
-			this.orderButton.removeAttribute('disabled')
+		if (disabled) this.orderButton.disabled = disabled;
+		else this.orderButton.removeAttribute('disabled');
 	}
 
 	set emailText(val: string) {
@@ -66,6 +63,6 @@ export class ContactsModalView extends Modal implements IContactsModal {
 	}
 
 	render() {
-		this.setContent(this.contactsContent);
+		super.setValue(this.element);
 	}
 }

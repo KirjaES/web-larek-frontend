@@ -9,20 +9,20 @@ export interface IProduct {
 	price: null | number;
 }
 
-export type IProductList = ApiListResponse<IProduct>
+export type IProductList = ApiListResponse<IProduct>;
 
-export type PaymentMethod = 'online' | 'cash'
+export type PaymentMethod = 'online' | 'cash';
 
 export interface IOrderRequestBody {
-	"payment": PaymentMethod,
-	"email": string,
-	"phone": string,
-	"address": string,
-	"total": number,
-	"items": Array<IProduct['id']>,
+	payment: PaymentMethod;
+	email: string;
+	phone: string;
+	address: string;
+	total: number;
+	items: Array<IProduct['id']>;
 }
 
 export interface IOrder {
 	id: string;
-	total: number
+	total: number;
 }

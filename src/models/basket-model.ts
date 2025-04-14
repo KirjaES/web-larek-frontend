@@ -38,7 +38,7 @@ export class BasketModel implements IBasketModel {
 	}
 
 	has(productId: IProduct['id']) {
-		return Boolean(this.items.find(p => p.id === productId));
+		return Boolean(this.items.find((p) => p.id === productId));
 	}
 
 	removeItem(productId: IProduct['id']) {

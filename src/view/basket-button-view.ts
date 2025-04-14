@@ -1,22 +1,20 @@
-import { bem } from '../utils/utils';
+import { ensureElement } from '../utils/utils';
 
 export interface IBasketButton {
 	setCounter(value: number): void;
-	set onClick(handler: VoidFunction)
-}
-
-const elementsClasses = {
-	basketButton: bem('header', 'basket'),
-	basketCounter: '.header__basket-counter',
+	set onClick(handler: VoidFunction);
 }
 
 export class BasketButtonView implements IBasketButton {
-	private button: HTMLButtonElement;
+	private element: HTMLButtonElement;
 	private counter: HTMLElement;
 
 	constructor(container: HTMLElement) {
-		this.button = container.querySelector(elementsClasses.basketButton.class) as HTMLButtonElement;
-		this.counter = container.querySelector(elementsClasses.basketCounter) as HTMLElement;
+		this.element = ensureElement<HTMLButtonElement>(
+			'.header__basket',
+			container
+		);
+		this.counter = ensureElement('.header__basket-counter', container);
 	}
 
 	setCounter(value: number) {
@@ -24,6 +22,6 @@ export class BasketButtonView implements IBasketButton {
 	}
 
 	set onClick(handler: VoidFunction) {
-		this.button.onclick = handler;
+		this.element.onclick = handler;
 	}
 }
